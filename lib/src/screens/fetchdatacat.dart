@@ -37,7 +37,8 @@ class _FetchDataCatState extends State<FetchDataCat> {
 
     });
     posts.clear();
-   posts = await  PostsApiProvider.fetchDataCat(category: category,page:  page);
+    PostsApiProvider postApiProvider = PostsApiProvider();
+   posts = await  postApiProvider.fetchDataCat(category,  page);
    setState(() {
         
                carouselPosts.clear();
