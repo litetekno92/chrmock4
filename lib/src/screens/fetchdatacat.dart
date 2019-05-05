@@ -5,7 +5,7 @@ import '../widgets/carouselwithindicator.dart';
 import '../widgets/newdrawer.dart';
 import 'package:flutter/material.dart';
 import '../models/embedpost.dart';
-import '../resources/APIcat.dart';
+import '../resources/posts_api_provider.dart';
 import '../widgets/card.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -31,18 +31,16 @@ class _FetchDataCatState extends State<FetchDataCat> {
   var bodyPosts = new List<Post>();
   ScrollController _controller = ScrollController(); // instance variable
 
-  _fetchDataCat(int category) {
+  _fetchDataCat(int category, int page) async {
     setState(() {
       isLoading = true;
 
     });
-    APICAT.fetchDataCat(category).then((response) {
-      setState(() {
-        posts.clear();
-        Iterable list = json.decode(response.body);
-        posts = list.map((model) => Post.fromJson(model)).toList();
-        //     posts.forEach((post) => log(post.title));
-        carouselPosts.clear();
+    posts.clear();
+   posts = await  PostsApiProvider.fetchDataCat(category: category,page:  page);
+   setState(() {
+        
+               carouselPosts.clear();
         bodyPosts.clear();
         for (var i = 0; i < posts.length; i++) {
           if ((i < 6) && (posts[i].featuredMedia != 0) && (posts[i].featuredMediaUrl != null) ) {
@@ -58,7 +56,7 @@ class _FetchDataCatState extends State<FetchDataCat> {
         // debugPrint("carouselPosts Length :  " + carouselPosts.length.toString());
         isLoading = false;
       });
-    });
+    
   }
 
 // transform(UTF8.decoder)
@@ -66,7 +64,7 @@ class _FetchDataCatState extends State<FetchDataCat> {
     super.initState();
  //     initializeDateFormatting();
  // await initializeDateFormatting("ar_SA", null);
-    _fetchDataCat(this.category);
+    _fetchDataCat(this.category, this.page);
     _controller.addListener(() {
       if (_controller.position.atEdge) {
         if (_controller.position.pixels == 0)
